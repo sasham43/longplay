@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express = require('express');
 var bodyParser = require('body-parser');
 
@@ -18,6 +19,38 @@ app.use(bodyParser.json());
 
 ///////////routes/////////////
 app.use('/', index);
+
+
+
+
+//////// spotify testing ///////
+var spotify = require('node-spotify')({appkeyFile: './spotify_appkey.key'});
+var spotifyUser = process.env.SPOTIFY_USER;
+var spotifyPass = process.env.SPOTIFY_PASS;
+
+var ready = function(){
+  var starredPlaylist = spotify.sessionUser.starredPlaylist;
+  // var track = starredPlaylist.getTrack(0);
+  var album = spotify.createFromLink('spotify:album:2rT82YYlV9UoxBYLIezkRq');
+  album.browse(function(err, thisAlbum){
+    if(err){
+      console.log('error browsing ablum:', err);
+    } else {
+      var tracks = thisAlbum.tracks;
+      var track = tracks[0];
+      spotify.player.play(track);
+      console.log('track:', track);
+    }
+  });
+  // spotify.player.play(starredPlaylist.getTrack(0));
+  // console.log('spotify playlist:', track);
+};
+
+spotify.on({
+  ready: ready
+});
+
+spotify.login(spotifyUser, spotifyPass, false, false);
 
 
 
