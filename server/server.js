@@ -31,15 +31,29 @@ var spotifyPass = process.env.SPOTIFY_PASS;
 var ready = function(){
   var starredPlaylist = spotify.sessionUser.starredPlaylist;
   // var track = starredPlaylist.getTrack(0);
-  var album = spotify.createFromLink('spotify:album:2rT82YYlV9UoxBYLIezkRq');
+  var album = spotify.createFromLink('spotify:album:71QyofYesSsRMwFOTafnhB');
+  var player = spotify.player;
   album.browse(function(err, thisAlbum){
     if(err){
       console.log('error browsing ablum:', err);
     } else {
       var tracks = thisAlbum.tracks;
-      var track = tracks[0];
-      spotify.player.play(track);
-      console.log('track:', track);
+      // var track = tracks[0];
+      // spotify.player.play(track);
+      var trackCount = 2;
+      var playAlbum = function(){
+        var track = tracks[trackCount];
+        player.play(track);
+        console.log('playing:', track.name);
+        player.on({
+          endOfTrack: function(){
+          console.log('track ended.');
+          trackCount++;
+          playAlbum();
+        }
+      });
+      };
+      playAlbum();
     }
   });
   // spotify.player.play(starredPlaylist.getTrack(0));
